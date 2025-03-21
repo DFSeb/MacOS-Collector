@@ -35,7 +35,7 @@ A zsh script for creating forensically sound copies of files and folders on macO
 
 1. Run the script:
    ```
-   ./forensic_copy.sh
+   ./MacOS_collector.sh
    ```
 
 2. Follow the prompts to:
