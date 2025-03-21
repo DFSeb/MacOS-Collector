@@ -1,10 +1,10 @@
 #!/bin/zsh
 
 # Script to select and copy files/folders to a sparsebundle with metadata preservation
-# For forensic use on macOS
+# For use on macOS
 
 # Set up logging
-log_file="/tmp/forensic_copy_$(date +%Y%m%d_%H%M%S).log"
+log_file="/tmp/MacOS_Collector_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$log_file") 2>&1
 
 # Function to log messages with timestamps
@@ -13,7 +13,7 @@ log() {
     echo "[$timestamp] $1"
 }
 
-log "Starting forensic copy process"
+log "Starting forensic acquisition process"
 log "Script executed by user: $(whoami)"
 log "Host: $(hostname)"
 log "macOS Version: $(sw_vers -productVersion)"
@@ -248,7 +248,7 @@ done
 
 # Create a summary report
 summary_file="$mount_point/ForensicCopy_Summary.txt"
-echo "===== Forensic Copy Summary =====" > "$summary_file"
+echo "===== forensic acquisition Summary =====" > "$summary_file"
 echo "Date: $(date)" >> "$summary_file"
 echo "Operator: $(whoami)" >> "$summary_file"
 echo "Host: $(hostname)" >> "$summary_file"
@@ -265,7 +265,7 @@ echo "" >> "$summary_file"
 echo "Log file: $log_file" >> "$summary_file"
 
 # Copy the log file to the sparsebundle
-cp "$log_file" "$mount_point/forensic_copy.log"
+cp "$log_file" "$mount_point/.log"
 log "Log file copied to sparsebundle"
 
 # Unmount the sparsebundle
@@ -275,9 +275,9 @@ if [ $? -ne 0 ]; then
     log "WARNING: Failed to unmount sparsebundle cleanly. You may need to unmount manually."
 fi
 
-log "Forensic copy process completed"
+log "forensic acquisition process completed"
 echo ""
-echo "Forensic copy process completed."
+echo "forensic acquisition process completed."
 echo "Successfully copied: $success_count items"
 echo "Failed to copy: $failure_count items"
 echo "Sparsebundle created at: $sparsebundle_path"
