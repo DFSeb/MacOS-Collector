@@ -191,27 +191,56 @@ def select_files_and_folders():
     root = tk.Tk()
     root.withdraw()  # Hide the main window
     
-    # Instructions for the user
+    # Inform the user about the selection process
     logger.info("Please select files and folders to include in the sparsebundle")
     
-    # Open file dialog
-    paths = filedialog.askopenfilenames(
-        title="Select files to include in sparsebundle",
+    # First, select files (can select multiple at once)
+    files = list(filedialog.askopenfilenames(
+        title="Select files to include in sparsebundle (or cancel if selecting folders only)",
         multiple=True
+    ))
+    
+    # Then ask if user wants to select folders
+    folders = []
+    select_folders = tk.messagebox.askyesno(
+        "Select Folders",
+        "Would you like to select folders as well?"
     )
-    files = list(paths)
     
-    # Open folder dialog
-    paths = []
-    while True:
-        path = filedialog.askdirectory(
-            title="Select a folder to include (Cancel when done selecting folders)"
-        )
-        if not path:
-            break
-        paths.append(path)
-    
-    folders = paths
+    # If yes, allow folder selection
+    if select_folders:
+        # Create a custom dialog for folder selection with a "Done" button
+        folder_select_window = tk.Toplevel(root)
+        folder_select_window.title("Select Folders")
+        folder_select_window.geometry("500x300")
+        
+        tk.Label(folder_select_window, 
+                text="Click 'Select Folder' to add folders to the selection.\nClick 'Done' when finished.",
+                pady=10).pack()
+        
+        selected_folders_listbox = tk.Listbox(folder_select_window, width=60, height=10)
+        selected_folders_listbox.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+        
+        buttons_frame = tk.Frame(folder_select_window)
+        buttons_frame.pack(pady=10)
+        
+        def add_folder():
+            folder_path = filedialog.askdirectory(
+                title="Select a folder to include",
+                parent=folder_select_window
+            )
+            if folder_path:
+                folders.append(folder_path)
+                selected_folders_listbox.insert(tk.END, folder_path)
+        
+        def finish_selection():
+            folder_select_window.destroy()
+        
+        tk.Button(buttons_frame, text="Select Folder", command=add_folder).pack(side=tk.LEFT, padx=5)
+        tk.Button(buttons_frame, text="Done", command=finish_selection).pack(side=tk.LEFT, padx=5)
+        
+        # Wait for this window to be closed before continuing
+        root.wait_window(folder_select_window)
     
     root.destroy()
     
